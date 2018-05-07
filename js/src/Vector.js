@@ -4,6 +4,15 @@ class Vector {
         this.y = y
     }
 
+    static assignBToA(vectorA, vectorB) {
+        vectorA.x = vectorB.x
+        vectorA.y = vectorB.y
+    }
+
+    static copy(vector) {
+        return new Vector(vector.x, vector.y)
+    }
+
     static getVectorAB(vertexA, vertexB) {
         return new Vector(vertexB.x - vertexA.x, vertexB.y - vertexA.y)
     }
