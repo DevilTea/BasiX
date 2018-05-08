@@ -1,9 +1,9 @@
 class Pairs {
     constructor() {
-        this.pairslist = []
+        this.list = []
     }
 
     addPair(pair) {
-        this.pairslist.push(pair)
+        this.list.push(pair)
     }
 }

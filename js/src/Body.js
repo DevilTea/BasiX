@@ -125,9 +125,9 @@ class Body {
 
         if(this.isChanged()) {
             this.currentVertices.forEach((vertex, index) => {
-                vertex.x = this.currentPosition.x + (this.originalVertices[index].x - this.originalPosition.x) * this.currentScale.x
-                vertex.y = this.currentPosition.y + (this.originalVertices[index].y - this.originalPosition.y) * this.currentScale.y
-                Vector.assignBToA(vertex, Vector.rotate(vertex, this.currentAngle, this.currentPosition))
+                vertex.x = this.originalVertices[index].x * this.currentScale.x
+                vertex.y = this.originalVertices[index].y * this.currentScale.y
+                Vector.assignBToA(vertex, Vector.rotate(vertex, this.currentAngle, Vector.zeroVector()))
             })
             
             Vector.assignBToA(this.previousPosition, this.currentPosition)
@@ -147,8 +147,10 @@ class Body {
             let x = this.composite.position.x + (this.currentPosition.x) * this.composite.scale.x
             let y = this.composite.position.y + (this.currentPosition.y) * this.composite.scale.y
             Vector.assignBToA(absolutePosition, Vector.rotate(new Vector(x, y), this.composite.angle, this.composite.position))
+            context.beginPath()
+            context.moveTo(this.composite.position.x, this.composite.position.y)
+            context.lineTo(absolutePosition.x, absolutePosition.y)
         }
-        context.beginPath()
         this.currentVertices.forEach((vertex, index) => {
             let nextVertex = this.currentVertices[(index + 1) % this.currentVertices.length]
             context.moveTo(vertex.x + absolutePosition.x, vertex.y + absolutePosition.y)

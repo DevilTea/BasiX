@@ -1,5 +1,6 @@
 let a = new Composite(400, 300)
-a.addBody(new CircleBody(100, 100, 50))
+a.addBody(new CircleBody(100, 0, 50))
+a.addBody(new PolygonBody(-100, 0, 50, 5))
 
 
 setInterval(() => {
@@ -11,7 +12,7 @@ setInterval(() => {
 
 let keydown = (e) => {
     if(e.key === 'w') {
-        a.angle = a.angle + 10
+        a.angle = a.angle + 10 * Math.PI / 180
     }
 }
 window.addEventListener('keydown', keydown)

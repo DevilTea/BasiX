@@ -13,6 +13,10 @@ class Vector {
         return new Vector(vector.x, vector.y)
     }
 
+    static zeroVector() {
+        return new Vector(0, 0)
+    }
+
     static getVectorAB(vertexA, vertexB) {
         return new Vector(vertexB.x - vertexA.x, vertexB.y - vertexA.y)
     }
@@ -89,7 +93,6 @@ class Vector {
     }
 
     static rotate(vector, angle, origin) {
-        angle = angle * Math.PI / 180
         let x = (vector.x - origin.x) * Math.cos(angle) - (vector.y - origin.y) * Math.sin(angle) + origin.x;
         let y = (vector.y - origin.y) * Math.cos(angle) + (vector.x - origin.x) * Math.sin(angle) + origin.y;
         return new Vector(x, y)

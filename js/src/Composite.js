@@ -104,9 +104,10 @@ class Composite {
     }
 
     update() {
+        
+
         if(this.isChanged()) {
             this.composites.forEach((composite) => {
-
                 composite.update()
             })
             this.bodies.forEach((body) => {
