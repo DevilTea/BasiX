@@ -1,5 +1,7 @@
 class Body {
     constructor(x, y) {
+        this.composite = undefined
+
         this.originalPosition = new Vector(x, y)
         this.originalScale = new Vector(1, 1)
         this.originalAngle = 0
@@ -20,14 +22,17 @@ class Body {
         this.previousAngle = 0
         this.previousVertices = []
 
-        this.velocity = new Vector(0, 0)
+        this.bodyVelocity = new Vector(0, 0)
 
+        this.defineProperties()
+    }
+
+    defineProperties() {
         Object.defineProperty(this, 'position', {
             get: () => {
                 return Vector.copy(this.currentPosition)
             },
             set: (newValue) => {
-                Vector.assignBToA(this.previousPosition, this.currentPosition)
                 Vector.assignBToA(this.currentPosition, newValue)
             }
         })
@@ -37,7 +42,6 @@ class Body {
                 return Vector.copy(this.currentScale)
             },
             set: (newValue) => {
-                Vector.assignBToA(this.previousScale, this.currentScale)
                 Vector.assignBToA(this.currentScale, newValue)
             }
         })
@@ -48,6 +52,52 @@ class Body {
             },
             set: (newValue) => {
                 this.currentAngle = newValue
+            }
+        })
+
+        Object.defineProperty(this, 'vertices', {
+            get: () => {
+                let vertices = []
+                this.currentVertices.forEach((vertex) => {
+                    vertices.push(Vector.copy(vertex))
+                })
+                return vertices
+            }
+        })
+
+        Object.defineProperty(this, 'velocity', {
+            get: () => {
+                return Vector.copy(this.bodyVelocity)
+            },
+            set: (newValue) => {
+                Vector.assignBToA(this.bodyVelocity, newValue)
+                
+            }
+        })
+
+        Object.defineProperty(this, 'direction', {
+            get: () => {
+                return Vector.getUnitVector(this.bodyVelocity)
+            }
+        })
+
+        Object.defineProperty(this, 'speed', {
+            get: () => {
+                return Vector.getMagnitude(this.bodyVelocity)
+            },
+            set: (newValue) => {
+                this.velocity = Vector.scale(this.direction, newValue)
+            }
+        })
+
+        Object.defineProperty(this, 'sides', {
+            get: () => {
+                let sides = []
+                this.vertices.forEach((vertex, index) => {
+                    let nextVertex = this.vertices[(index + 1) % this.vertices.length]
+                    sides.push(Vector.getVectorAB(vertex, nextVertex))
+                });
+                return sides
             }
         })
     }
@@ -69,38 +119,43 @@ class Body {
     }
 
     update() {
+        if(!Vector.isZeroVector(this.velocity)) {
+            Vector.assignBToA(this.currentPosition, Vector.add(this.currentPosition, this.velocity))
+        }
+
         if(this.isChanged()) {
             this.currentVertices.forEach((vertex, index) => {
                 vertex.x = this.currentPosition.x + (this.originalVertices[index].x - this.originalPosition.x) * this.currentScale.x
                 vertex.y = this.currentPosition.y + (this.originalVertices[index].y - this.originalPosition.y) * this.currentScale.y
-                let x = (vertex.x - this.currentPosition.x) * Math.cos(this.currentAngle) - (vertex.y - this.currentPosition.y) * Math.sin(this.currentAngle) + this.currentPosition.x;
-                let y = (vertex.y - this.currentPosition.y) * Math.cos(this.currentAngle) + (vertex.x - this.currentPosition.x) * Math.sin(this.currentAngle) + this.currentPosition.y;
-                vertex.x = x
-                vertex.y = y
+                Vector.assignBToA(vertex, Vector.rotate(vertex, this.currentAngle, this.currentPosition))
             })
             
-            this.previousPosition.x = this.currentPosition.x
-            this.previousPosition.y = this.currentPosition.y
-            this.previousScale.x = this.currentScale.x
-            this.previousScale.y = this.currentScale.y
+            Vector.assignBToA(this.previousPosition, this.currentPosition)
+            Vector.assignBToA(this.previousScale, this.currentScale)
             this.previousAngle = this.currentAngle
             this.previousVertices.forEach((vertex, index) => {
-                vertex.x = this.currentVertices[index].x
-                vertex.y = this.currentVertices[index].y
+                Vector.assignBToA(vertex, this.currentVertices[index])
             })
         }
     }
 
     stroke() {
-        this.update()
         let canvas = document.getElementById('canvas')
         let context = canvas.getContext('2d')
+        let absolutePosition = Vector.copy(this.currentPosition)
+        if(this.composite) {
+            let x = this.composite.position.x + (this.currentPosition.x) * this.composite.scale.x
+            let y = this.composite.position.y + (this.currentPosition.y) * this.composite.scale.y
+            Vector.assignBToA(absolutePosition, Vector.rotate(new Vector(x, y), this.composite.angle, this.composite.position))
+        }
+        context.beginPath()
         this.currentVertices.forEach((vertex, index) => {
             let nextVertex = this.currentVertices[(index + 1) % this.currentVertices.length]
-            context.moveTo(vertex.x, vertex.y)
-            context.lineTo(nextVertex.x, nextVertex.y)
+            context.moveTo(vertex.x + absolutePosition.x, vertex.y + absolutePosition.y)
+            context.lineTo(nextVertex.x + absolutePosition.x, nextVertex.y + absolutePosition.y)
             context.strokeStyle = '#eeeeee'
             context.stroke()
         })
+        context.closePath()
     }
 }

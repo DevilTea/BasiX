@@ -20,7 +20,7 @@ class Vector {
     //取得向量的單位向量
     static getUnitVector(vector) {
         let magnitude = Vector.getMagnitude(vector)
-        return new Vector(vector.x / magnitude, vector.y / magnitude)
+        return magnitude === 0 ? new Vector(0, 0) : new Vector(vector.x / magnitude, vector.y / magnitude)
     }
 
     //取得向量的長度
@@ -53,6 +53,11 @@ class Vector {
         return vectorA.x * vectorB.x + vectorA.y * vectorB.y
     }
 
+    //判斷是否為0向量
+    static isZeroVector(vector) {
+        return vector.x === 0 && vector.y === 0
+    }
+
     //判斷兩向量是否相等
     static isEqual(vectorA, vectorB) {
         return (vectorA.x === vectorB.x && vectorA.y === vectorB.y)
@@ -67,12 +72,12 @@ class Vector {
 
     //取得A在B上的正射影
     static projectAOnB(vectorA, vectorB) {
-        return Vector.dotProduct(vectorA, Vector.scale(vectorB, Vector.getMagnitude(vectorB)))
+        return Vector.scale(Vector.getUnitVector(vectorB), Vector.getProjectionAOnBLength(vectorA, vectorB))
     }
 
     //取得A在B上的正射影長
     static getProjectionAOnBLength(vectorA, vectorB) {
-        return Vector.getMagnitude(Vector.projectAOnB(vectorA, vectorB))
+        return Vector.dotProduct(vectorA, Vector.getUnitVector(vectorB))
     }
 
     static getNormalL(vector) {
@@ -84,6 +89,7 @@ class Vector {
     }
 
     static rotate(vector, angle, origin) {
+        angle = angle * Math.PI / 180
         let x = (vector.x - origin.x) * Math.cos(angle) - (vector.y - origin.y) * Math.sin(angle) + origin.x;
         let y = (vector.y - origin.y) * Math.cos(angle) + (vector.x - origin.x) * Math.sin(angle) + origin.y;
         return new Vector(x, y)
