@@ -1,16 +1,15 @@
-class World extends Composite {
+BasiX.World = class World extends BasiX.Composite {
     constructor() {
         super(0, 0)
-        this.allBodies = []
-        this.pairs = new Pairs()
+        this.collisionDetector = new BasiX.CollisionDetector()
     }
 
     addBody(newBody) {
         super.addBody(newBody)
-        this.allBodies.forEach((body) => {
-            pairs.addPair(new Pair(newBody, body))
+        this.collisionDetector.allBodies.forEach((body) => {
+            this.collisionDetector.pairs.addPair(new BasiX.Pair(newBody, body))
         })
-        this.allBodies.push(newBody)
+        this.collisionDetector.allBodies.push(newBody)
     }
 
     addComposite(newComposite) {
@@ -24,5 +23,10 @@ class World extends Composite {
             })
         }
         func(newComposite)
+    }
+
+    update(deltaTime) {
+        super.update(deltaTime)
+        this.collisionDetector.detectAllPairs()
     }
 }

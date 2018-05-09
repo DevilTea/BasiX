@@ -1,4 +1,4 @@
-class Pairs {
+BasiX.Pairs = class Pairs {
     constructor() {
         this.list = []
     }

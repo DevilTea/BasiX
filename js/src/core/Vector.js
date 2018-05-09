@@ -1,4 +1,4 @@
-class Vector {
+BasiX.Vector = class Vector {
     constructor(x, y) {
         this.x = x
         this.y = y
@@ -92,7 +92,7 @@ class Vector {
         return Vector.getUnitVector(new Vector(vector.y, -vector.x))
     }
 
-    static rotate(vector, angle, origin) {
+    static rotate(vector, angle, origin = Vector.zeroVector()) {
         let x = (vector.x - origin.x) * Math.cos(angle) - (vector.y - origin.y) * Math.sin(angle) + origin.x;
         let y = (vector.y - origin.y) * Math.cos(angle) + (vector.x - origin.x) * Math.sin(angle) + origin.y;
         return new Vector(x, y)

@@ -1,4 +1,4 @@
-class Pair {
+BasiX.Pair = class Pair {
     constructor(bodyA, bodyB) {
         this.bodyA = bodyA
         this.bodyB = bodyB
